@@ -22,6 +22,7 @@ var context;
 var nameList = [["Dorothy","123456"],["Mojia","234567"],["Xiaofan","345678"]];
 
 
+// how can i turn to another page and then draw the graph?
 function ready() {
     console.log("came here");
     // switch div
@@ -33,7 +34,7 @@ function ready() {
     for(i = 0; i < nameList.length; i++){
         if(nameList[i][0] == idUser){
             if(nameList[i][0] == password){
-                init(data);
+                //init(data);
             }
         }
     }
@@ -134,6 +135,7 @@ function addIcon(row, col, filename) {
 function changeStyle(row, col) {
     var curr = grids[row][col];
     var style;
+    // why 3 states? 
     if (!curr.visible) {
         style = STYLE_INVISIBLE;
     } else if (curr.swept) {
@@ -154,6 +156,7 @@ function isInRange(row, col) {
     return (row >= 0 && row < SIZE && col >= 0 && col < SIZE);
 }
 
+// why socket?
 function handleClick(evt) {
     var cCol = parseInt((parseInt(evt.pageX) / LENGTH)) - 1;
     var cRow = parseInt((parseInt(evt.pageY) - NAV_HEIGHT) / LENGTH) - 1;
@@ -171,6 +174,7 @@ function handleClick(evt) {
     }
 }
 
+// what is this?
 function handleMenu(evt) {
     var cCol = parseInt((parseInt(evt.pageX) / LENGTH)) - 1;
     var cRow = parseInt((parseInt(evt.pageY) - NAV_HEIGHT) / LENGTH) - 1;

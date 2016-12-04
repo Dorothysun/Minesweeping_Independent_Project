@@ -1,0 +1,19 @@
+* {
+    margin: 0;
+    padding: 0;
+	overflow: scroll;
+}
+
+#canvas{
+	margin:20px;
+}
+
+#flag{
+	src: url('flag.png');
+
+}
+
+#bomb{
+	src: url('bomb.png');
+
+}

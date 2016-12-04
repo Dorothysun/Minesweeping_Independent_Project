@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Reveal</title>
+<link type="text/css" rel="stylesheet" href="static/css/Canvas.css" />
+
+
+</head>
+
+<body>
+
+<script src="static/js/jquery-3.1.0.js"></script> 
+<script src="https://code.angularjs.org/1.5.8/angular.min.js"></script>
+<script type="text/javascript">
+
+const MAX = 999999; //has bomb
+const MIN = 100000;
+
+const SIZE = 31;
+const LENGTH = 30;
+const BLOCK_WIDTH = SIZE * LENGTH;
+const BLOCK_HEIGHT = SIZE * LENGTH;
+
+const VAL_VISIBLE = 0;
+const STYLE_INVISIBLE = "#000000";
+const STYLE_SWEPT_SAFE = "#e0e0e0";
+const STYLE_SWEPT_UNSAFE = "#9e9e9e";
+var grid;
+var has_mine;
+var neighbor_mines;
+var game_over;
+
+// how to get the grid from canvas
+function init(){
+    
+}
+
+
+function drawBoard() {
+    for (var x = 0; x <= BLOCK_WIDTH; x += 30) {
+        context.moveTo(x + LENGTH, LENGTH);
+        context.lineTo(x + LENGTH, BLOCK_HEIGHT + LENGTH);
+    }
+
+    for (var y = 0; y <= BLOCK_HEIGHT; y += 30) {
+        context.moveTo(LENGTH, y + LENGTH);
+        context.lineTo(BLOCK_WIDTH + LENGTH, y + LENGTH);
+    }
+
+
+    context.strokeStyle = "black";
+    context.stroke();
+}
+
+drawBoard();
+
+function bomb(row,col){
+    context.drawImage(bombImg,col*30,row*30);
+}
+
+
+function draw_bomb(grid){
+    for( i = 0; i < SIZE; i++){
+        for( j = 0; j < SIZE; j++){
+          if(grid[i][j].has_mine == 1){
+            bomb(row,col);
+          }
+        }
+      }
+}
+
+</script>
+</body>
+</html>

@@ -4,15 +4,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
     <title>Mine</title>
-    <link type="text/css" rel="stylesheet" href="./static/css/materialize.min.css"/>
-    <link href="./static/css/font-awesome.css" rel="stylesheet" type="text/css"/>
+    <link type="text/css" rel="stylesheet" href="static/css/materialize.min.css"/>
+    <link href="static/css/font-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 
-<script type="text/javascript" src="./static/js/jquery-3.1.0.js"></script>
-<script type="text/javascript" src="./static/js/materialize.min.js"></script>
-<script type="text/javascript" src="./static/js/new_mine.js"></script>
+<script type="text/javascript" src="static/js/jquery-3.1.0.js"></script>
+<script type="text/javascript" src="static/js/materialize.min.js"></script>
+<script type="text/javascript" src="static/js/mine.js"></script>
 
-<body>
+<body onload="start()">
 <nav class="light-blue lighten-1" role="navigation">
     <div class="nav-wrapper container"><a id="logo-container" class="brand-logo">Mine</a></div>
 </nav>
@@ -34,21 +34,22 @@
 
                     <div class="row">
                         <div class="input-field col s12">
-                            <input type="text" name="Username" id="Username" placeholder="Username"/>
-                            <label for="Username">Username</label>
+                            <input type="number" name="ID" id="ID" placeholder="ID" readonly/>
+                            <label for="ID">ID</label>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="input-field col s12">
-                            <input class="active" type="number" name="room" id="room" placeholder="000000"/>
-                            <label for="room">Password</label>
+                            <input class="active" type="number" name="room" id="room" placeholder="0000"/>
+                            <label for="room">Room number</label>
                         </div>
                     </div>
 
                     <center>
                         <div class="row">
-                            <button type="button" name="join" id="btn" class="col s12 btn btn-large waves-effect indigo" onclick="ready()">Join
+                            <button type="button" name="join" id="btn" class="col s12 btn btn-large waves-effect indigo"
+                                    onclick="init()">Join
                             </button>
                         </div>
                     </center>
@@ -116,18 +117,7 @@
     </center>
 </div>
 
-<div class="container" id="divThree" style="float: left; display: none;">
+<div class="container" id="divThree" style="display: none">
 </div>
-
-<div class="container" id="divFour" style="float: right; padding: 100px; width: 400px; display: none;">
-    <center>
-    <div class="section"></div>
-    <h5 class="indigo-text">You lost!</h5>
-    <div class="section"></div>
-    <div class="row">
-        <button type="submit" name="refresh"
-            class="col s12 btn btn-large waves-effect indigo">Refresh</button>
-    </div>
-</center>
-</div>
+</body>
 </html>

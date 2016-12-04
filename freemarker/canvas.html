@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Canvass</title>
+<link type="text/css" rel="stylesheet" href="static/css/Canvas.css" />
+
+
+</head>
+
+<body>
+
+<script src="static/js/jquery-3.1.0.js"></script> 
+<script src="https://code.angularjs.org/1.5.8/angular.min.js"></script>
+<script type="text/javascript">
+
+const MAX = 999999; //has bomb
+const MIN = 100000;
+
+const SIZE = 31;
+const LENGTH = 30;
+const BLOCK_WIDTH = SIZE * LENGTH;
+const BLOCK_HEIGHT = SIZE * LENGTH;
+
+const VAL_VISIBLE = 0;
+const STYLE_INVISIBLE = "#000000";
+const STYLE_SWEPT_SAFE = "#e0e0e0";
+const STYLE_SWEPT_UNSAFE = "#9e9e9e";
+var grid;
+var has_mine;
+var neighbor_mines;
+var game_over;
+
+function init(){
+    grid = new Array(SIZE);
+    for (i = 0; i < SIZE; i++){
+        for(j=0; j < SIZE; j++){
+            grid[i][j].has_mine = 0; 
+            grid[i][j].neighbor_mines = 0; 
+        }
+    }
+
+    game_over = false;
+}
+
+
+//plant bomb 
+function generate_game_grid(){
+    //var grid = new Array(SIZE);
+    for (i = 0; i < SIZE; ++i) grid(i) = new Array(SIZE);
+    for(i=0; i < SIZE; i++){
+      for(j=0; j < SIZE; j++){
+        grid[i][j].visited = 0;
+        // assign a random num to each slot
+        var rand = Math.floor(Math.random() * 100 + 1);
+
+        if (rand < 100 - MINE_PC) {
+          grid[i][j].has_mine = 0;
+        } else {
+          grid[i][j].has_mine = 1;
+        }
+      }
+    }
+    for(i=0; i < SIZE; i++){
+      for(j=0; j < SIZE; j++){
+        countAtIndex(grid);
+      }
+    }
+}
+
+function countAtIndex(grid){
+    for( i = 0; i < SIZE; i++){
+        for( j = 0; j < SIZE; j++){
+          for( k = i-1; k < i+2; k++){
+            for( l = j-1; l < j+2; l++){
+              if(inBounds(k, l)){
+                grid[i][j].neighbor_mines += grid[k][l].has_mine;
+              }
+            }
+          }
+          grid[i][j].neighbor_mines -= grid[i][j].has_mine; // include itself
+        }
+     }
+}
+
+
+
+
+function isInRange(row, col, SIZE) {
+    return (row >= 0 && row < SIZE && col >= 0 && col < SIZE);
+}
+
+function changeState(row, col, newState) {
+    if(grid[row][col].has_mine == 1){
+        // how to end the game???? 
+        game_over = true;
+    }else if(grid[row][col].neighbor_mines == 0){
+        changeColor(row, col, STYLE_SWEPT_UNSAFE);
+    }else if(grid[row][col].neighbor_mines != 0){
+        changeColor(row, col, STYLE_SWEPT_SAFE);
+    }
+}
+
+//recursive functin
+function explore(row, col) {
+    while(!game_over){
+        var newRow;
+        var newCol;
+        for (var i = -1; i < 2; i++) {
+            newRow = row + i;
+            for (var j = -1; j < 2; j++) {
+                newCol = col + j;
+                if (isInRange(newRow, newCol, SIZE)) {
+                    changeState(newRow, newCol, newState);
+                    explore(row, col);
+                }
+            }
+        }
+    }
+}
+
+var canvas = $('<canvas/>').attr({
+    width: BLOCK_WIDTH + 2 * LENGTH,
+    height: BLOCK_HEIGHT + 2 * LENGTH
+}).appendTo('body');
+
+var context = canvas.get(0).getContext("2d");
+
+function drawBoard() {
+    for (var x = 0; x <= BLOCK_WIDTH; x += 30) {
+        context.moveTo(x + LENGTH, LENGTH);
+        context.lineTo(x + LENGTH, BLOCK_HEIGHT + LENGTH);
+    }
+
+    for (var y = 0; y <= BLOCK_HEIGHT; y += 30) {
+        context.moveTo(LENGTH, y + LENGTH);
+        context.lineTo(BLOCK_WIDTH + LENGTH, y + LENGTH);
+    }
+
+    context.strokeStyle = "black";
+    context.stroke();
+}
+
+drawBoard();
+generate_game_grid();
+
+function changeColor(row, col, style) {
+    context.fillStyle = style;
+    context.fillRect((col + 1) * LENGTH, (row + 1) * LENGTH, LENGTH, LENGTH);
+
+}
+
+function getClickPosition(evt) {
+    var col = parseInt(parseInt(evt.pageX.toString()) / 30) - 1;
+    var row = parseInt(parseInt(evt.pageY.toString()) / 30) - 1;
+    if (isInRange(row, col, SIZE)) {
+        explore(row, col)
+    }
+}
+
+function makeFlag(row,col){
+    var myImg = new Image();
+    myImg.onload = function() {
+        var myPtn = context.createPattern(this, "repeat");
+        context.fillStyle = myPtn;
+        context.fillRect(30, 30, 30, 30);
+        context.fill();
+    };
+    myImg.src = "static/css/flag.png";
+}
+
+function bomb(row,col){
+    context.drawImage(bombImg,col*30,row*30);
+}
+
+document.addEventListener("mousedown", getClickPosition, false);
+makeFlag(3,4);
+bomb(4,5);
+
+</script>
+</body>
+</html>
