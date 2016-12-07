@@ -13,8 +13,8 @@ const VAL_VISIBLE = 1;
 const VAL_OWNED = 2;
 
 const STYLE_INVISIBLE = "#000000";
-const STYLE_SWEPT_SAFE = "#e0e0e0";
-const STYLE_SWEPT_UNSAFE = "#9e9e9e";
+// const STYLE_SWEPT_SAFE = "#e0e0e0";
+// const STYLE_SWEPT_UNSAFE = "#9e9e9e";
 
 //PRE
 const STYLE_SWEPT = "#e0e0e0";
@@ -50,11 +50,11 @@ function generate_game_grid(){
         }
       }
     }
-    for(i=0; i < SIZE; i++){
-      for(j=0; j < SIZE; j++){
-        countAtIndex(grid);
-      }
-    }
+    // for(i=0; i < SIZE; i++){
+    //   for(j=0; j < SIZE; j++){
+    //     countAtIndex(grid);
+    //   }
+    // }
 }
 
 function countAtIndex(grid){
@@ -71,6 +71,8 @@ function countAtIndex(grid){
         }
      }
 }
+
+
 
 
 
@@ -103,13 +105,15 @@ function isInRange(row, col) {
 function changeState(row, col) {
     if(grid[row][col].has_mine == 1){
         // how to end the game????..........
-        game_over = true;
+        return;
+        game_over = true; // write another function
     }else if(grid[row][col].neighbor_mines == 0){
-        changeColor(row, col, STYLE_SWEPT_UNSAFE);
+        changeColor(row, col, STYLE_SWEPT);
     }else if(grid[row][col].neighbor_mines != 0){
-        changeColor(row, col, STYLE_SWEPT_SAFE);
+        changeColor(row, col, STYLE_UNSWEPT);
     }
 }
+
 
 function explore(row, col) {
     var newRow;
@@ -126,23 +130,78 @@ function explore(row, col) {
     changeColor(row, col, STYLE_SWEPT);
 }
 
-//recursive functin
+// uncomment this to find problems 
 // function explore(row, col) {
-//     while(!game_over){
-//         var newRow;
-//         var newCol;
-//         for (var i = -1; i < 2; i++) {
-//             newRow = row + i;
-//             for (var j = -1; j < 2; j++) {
-//                 newCol = col + j;
-//                 if (isInRange(newRow, newCol, SIZE)) {
-//                     changeState(newRow, newCol);
-//                     explore(row, col);
-//                 }
-//             }
-//         }
+//     if(grid[row][col].has_mine == 1){
+//         // how to end the game????..........
+//         //return;
+//         //game_over = true; // write another function
+//         draw_RevealBoard();
 //     }
+
+//     explore_helper(row, col);
 // }
+
+
+//recursive helper functin
+function explore_helper(row, col) {
+    if(grid[row][col].neighbor_mines == 0){
+        var newRow;
+        var newCol;
+
+        for (var i = -1; i < 2; i++) {
+            newRow = row + i;
+            for (var j = -1; j < 2; j++) {
+                newCol = col + j;
+                if (isInRange(newRow, newCol, SIZE)) {
+                    changeState(newRow, newCol);
+                    explore_helper(newRow, newCol);
+                }
+            }
+        }
+    }else{
+        changeState(newRow, newCol);
+        return;
+    }
+}
+
+// try to end the page
+function draw_RevealBoard() {
+    document.getElementById("divThree").style.display = "none";
+    document.getElementById("divFour").style.display = "block";
+
+    for (var x = 0; x <= BLOCK_WIDTH; x += 30) {
+        context.moveTo(x + LENGTH, LENGTH);
+        context.lineTo(x + LENGTH, BLOCK_HEIGHT + LENGTH);
+    }
+
+    for (var y = 0; y <= BLOCK_HEIGHT; y += 30) {
+        context.moveTo(LENGTH, y + LENGTH);
+        context.lineTo(BLOCK_WIDTH + LENGTH, y + LENGTH);
+    }
+
+
+    context.strokeStyle = "black";
+    context.stroke();
+
+    draw_bomb(grid);
+}
+
+function bomb(row,col){
+    context.drawImage(bombImg,col*30,row*30);
+}
+
+
+function draw_bomb(grid){
+    for( i = 0; i < SIZE; i++){
+        for( j = 0; j < SIZE; j++){
+          if(grid[i][j].has_mine == 1){
+            bomb(row,col);
+          }
+        }
+      }
+}
+
 
 function makeFlag(row, col) {
     var myImg = new Image();
