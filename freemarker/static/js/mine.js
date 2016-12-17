@@ -115,32 +115,32 @@ function changeState(row, col) {
 }
 
 
-function explore(row, col) {
-    var newRow;
-    var newCol;
-    for (var i = -1; i < 2; i++) {
-        newRow = row + i;
-        for (var j = -1; j < 2; j++) {
-            newCol = col + j;
-            if (isInRange(newRow, newCol, SIZE)) {
-                changeColor(newRow, newCol, STYLE_UNSWEPT);
-            }
-        }
-    }
-    changeColor(row, col, STYLE_SWEPT);
-}
+// function explore(row, col) {
+//     var newRow;
+//     var newCol;
+//     for (var i = -1; i < 2; i++) {
+//         newRow = row + i;
+//         for (var j = -1; j < 2; j++) {
+//             newCol = col + j;
+//             if (isInRange(newRow, newCol, SIZE)) {
+//                 changeColor(newRow, newCol, STYLE_UNSWEPT);
+//             }
+//         }
+//     }
+//     changeColor(row, col, STYLE_SWEPT);
+// }
 
 // uncomment this to find problems 
-// function explore(row, col) {
-//     if(grid[row][col].has_mine == 1){
-//         // how to end the game????..........
-//         //return;
-//         //game_over = true; // write another function
-//         draw_RevealBoard();
-//     }
+function explore(row, col) {
+    if(grid[row][col].has_mine == 1){
+        // how to end the game????..........
+        //return;
+        //game_over = true; // write another function
+        draw_RevealBoard();
+    }
 
-//     explore_helper(row, col);
-// }
+    explore_helper(row, col);
+}
 
 
 //recursive helper functin
