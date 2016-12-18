@@ -35,27 +35,21 @@ var game_over;
 
 //plant bomb 
 function generate_game_grid(){
-    // var grid = new Array(SIZE);
-    // for (i = 0; i < SIZE; ++i) grid(i) = new Array(SIZE);
     for(i=0; i < SIZE; i++){
       for(j=0; j < SIZE; j++){
-        //grid[i][j].visited = 0;
-        // assign a random num to each slot
+        // generate mines
         var rand = Math.floor(Math.random() * 100 + 1);
-
-        //console.log("enter rand generate_game_grid");
 
         if (rand < 100 - MINE_PC) {
           grid[i][j].has_mine = 0;
-          //console.log("not a mine");
+
         } else {
           grid[i][j].has_mine = 1;
-          //console.log("place a mine");
+
         }
 
-        // grid[i][j].neighbor_mines += grid[i-1][j-1].has_mine + grid[i][j-1].has_mine + grid[i+1][j-1].has_mine
-        //                     + grid[i-1][j].has_mine + grid[i+1][j].has_mine + grid[i-1][j+1].has_mine
-        //                     + grid[i][j+1].has_mine + grid[i+1][j+1].has_mine;
+
+        // try to count the 8 neighbor_mines
         for( k = i-1; k < i+2; k++){
             for( l = j-1; l < j+2; l++){
               if(isInRange(k, l)){
@@ -68,20 +62,6 @@ function generate_game_grid(){
     }
 }
 
-// function countAtIndex(grid){
-//     for( i = 0; i < SIZE; i++){
-//         for( j = 0; j < SIZE; j++){
-//           for( k = i-1; k < i+2; k++){
-//             for( l = j-1; l < j+2; l++){
-//               if(inBounds(k, l)){
-//                 grid[i][j].neighbor_mines += grid[k][l].has_mine;
-//               }
-//             }
-//           }
-//           grid[i][j].neighbor_mines -= grid[i][j].has_mine; // include itself
-//         }
-//      }
-// }
 
 
 function drawBoard() {
@@ -103,25 +83,6 @@ function isInRange(row, col) {
     return (row >= 0 && row < SIZE && col >= 0 && col < SIZE);
 }
 
-//previous
-// function changeState(row, col, newState) {
-//     newState = parseInt(newState);
-//     console.log(newState >= 0 && newState < 16);
-//     return false;
-// }
-
-// function changeState(row, col) {
-//     if(grid[row][col].has_mine == 1){
-//         // how to end the game????..........
-//         return;
-//         game_over = true; // write another function
-//     }else if(grid[row][col].neighbor_mines == 0){
-//         changeColor(row, col, STYLE_SWEPT);
-//     }else if(grid[row][col].neighbor_mines != 0){
-//         changeColor(row, col, STYLE_UNSWEPT);
-//     }
-// }
-
 
 // function explore(row, col) {
 //     var newRow;
@@ -138,13 +99,10 @@ function isInRange(row, col) {
 //     changeColor(row, col, STYLE_SWEPT);
 // }
 
-//uncomment this to find problems 
+//recursion 
 function explore(row, col) {
     if(grid[row][col].has_mine == 1){
-        // how to end the game????..........
-        //return;
-        //game_over = true; // write another function
-        //alert("Sorry, you lose the game");
+        // end the game
         showFinalBoard();
         return;
     }else{
@@ -153,11 +111,11 @@ function explore(row, col) {
         explore_helper(row, col);
     }
 
-    
 }
 
 
-//recursive helper functin
+//recursive helper functin to recurse on the surrounding 8 neighbours 
+// I dont think the visited work properly 
 function explore_helper(row, col) { 
     if(grid[row][col].neighbor_mines != 0){
         grid[newRow, newCol].visited == true;
@@ -205,7 +163,16 @@ function draw_RevealBoard() {
 }
 
 function bomb(row,col){
-    context.drawImage(bombImg,col*30,row*30);
+    //context.drawImage(bombImg,col*30,row*30);
+
+    var myImg = new Image();
+    myImg.onload = function() {
+        var myPtn = context.createPattern(this, "repeat");
+        context.fillStyle = myPtn;
+        context.fillRect((col + 1) * LENGTH, (row + 1) * LENGTH, LENGTH, LENGTH);
+        context.fill();
+    };
+    myImg.src = "static/css/bomb.png";
 }
 
 
@@ -246,7 +213,8 @@ function showFinalBoard(){
     for(i=0; i < SIZE; i++){
       for(j=0; j < SIZE; j++){
         if(grid[i][j].has_mine){
-            changeColor(i, j, STYLE_MINE);
+            //changeColor(i, j, STYLE_MINE);
+            bomb(i,j);
         }
       }
     }
