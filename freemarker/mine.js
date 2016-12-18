@@ -2,7 +2,7 @@ const ID_MAX = 999999;
 const ID_MIN = 100000;
 
 const SIZE = 10;
-const MINE_PC = SIZE*SIZE/4;
+const MINE_PC = SIZE*SIZE/6;
 const LENGTH = 32;
 const BLOCK_WIDTH = SIZE * LENGTH;
 const BLOCK_HEIGHT = SIZE * LENGTH;
@@ -19,7 +19,7 @@ const STYLE_INVISIBLE = "#000000";
 //PRE
 const STYLE_SWEPT = "#e0e0e0";
 const STYLE_UNSWEPT = "#9e9e9e";
-
+const STYLE_MINE = "#ff0000";
 
 var idUser;
 var idRoom;
@@ -35,45 +35,53 @@ var game_over;
 
 //plant bomb 
 function generate_game_grid(){
-    //var grid = new Array(SIZE);
-    for (i = 0; i < SIZE; ++i) grid(i) = new Array(SIZE);
+    // var grid = new Array(SIZE);
+    // for (i = 0; i < SIZE; ++i) grid(i) = new Array(SIZE);
     for(i=0; i < SIZE; i++){
       for(j=0; j < SIZE; j++){
-        grid[i][j].visited = 0;
+        //grid[i][j].visited = 0;
         // assign a random num to each slot
         var rand = Math.floor(Math.random() * 100 + 1);
 
+        //console.log("enter rand generate_game_grid");
+
         if (rand < 100 - MINE_PC) {
           grid[i][j].has_mine = 0;
+          //console.log("not a mine");
         } else {
           grid[i][j].has_mine = 1;
+          //console.log("place a mine");
         }
-      }
-    }
-    // for(i=0; i < SIZE; i++){
-    //   for(j=0; j < SIZE; j++){
-    //     countAtIndex(grid);
-    //   }
-    // }
-}
 
-function countAtIndex(grid){
-    for( i = 0; i < SIZE; i++){
-        for( j = 0; j < SIZE; j++){
-          for( k = i-1; k < i+2; k++){
+        // grid[i][j].neighbor_mines += grid[i-1][j-1].has_mine + grid[i][j-1].has_mine + grid[i+1][j-1].has_mine
+        //                     + grid[i-1][j].has_mine + grid[i+1][j].has_mine + grid[i-1][j+1].has_mine
+        //                     + grid[i][j+1].has_mine + grid[i+1][j+1].has_mine;
+        for( k = i-1; k < i+2; k++){
             for( l = j-1; l < j+2; l++){
-              if(inBounds(k, l)){
+              if(isInRange(k, l)){
                 grid[i][j].neighbor_mines += grid[k][l].has_mine;
               }
-            }
           }
-          grid[i][j].neighbor_mines -= grid[i][j].has_mine; // include itself
         }
-     }
+       grid[i][j].neighbor_mines -= grid[i][j].has_mine; // exclude itself
+      }
+    }
 }
 
-
-
+// function countAtIndex(grid){
+//     for( i = 0; i < SIZE; i++){
+//         for( j = 0; j < SIZE; j++){
+//           for( k = i-1; k < i+2; k++){
+//             for( l = j-1; l < j+2; l++){
+//               if(inBounds(k, l)){
+//                 grid[i][j].neighbor_mines += grid[k][l].has_mine;
+//               }
+//             }
+//           }
+//           grid[i][j].neighbor_mines -= grid[i][j].has_mine; // include itself
+//         }
+//      }
+// }
 
 
 function drawBoard() {
@@ -102,50 +110,62 @@ function isInRange(row, col) {
 //     return false;
 // }
 
-function changeState(row, col) {
-    if(grid[row][col].has_mine == 1){
-        // how to end the game????..........
-        return;
-        game_over = true; // write another function
-    }else if(grid[row][col].neighbor_mines == 0){
-        changeColor(row, col, STYLE_SWEPT);
-    }else if(grid[row][col].neighbor_mines != 0){
-        changeColor(row, col, STYLE_UNSWEPT);
-    }
-}
-
-
-function explore(row, col) {
-    var newRow;
-    var newCol;
-    for (var i = -1; i < 2; i++) {
-        newRow = row + i;
-        for (var j = -1; j < 2; j++) {
-            newCol = col + j;
-            if (isInRange(newRow, newCol, SIZE)) {
-                changeColor(newRow, newCol, STYLE_UNSWEPT);
-            }
-        }
-    }
-    changeColor(row, col, STYLE_SWEPT);
-}
-
-// uncomment this to find problems 
-// function explore(row, col) {
+// function changeState(row, col) {
 //     if(grid[row][col].has_mine == 1){
 //         // how to end the game????..........
-//         //return;
-//         //game_over = true; // write another function
-//         draw_RevealBoard();
+//         return;
+//         game_over = true; // write another function
+//     }else if(grid[row][col].neighbor_mines == 0){
+//         changeColor(row, col, STYLE_SWEPT);
+//     }else if(grid[row][col].neighbor_mines != 0){
+//         changeColor(row, col, STYLE_UNSWEPT);
 //     }
-
-//     explore_helper(row, col);
 // }
 
 
+// function explore(row, col) {
+//     var newRow;
+//     var newCol;
+//     for (var i = -1; i < 2; i++) {
+//         newRow = row + i;
+//         for (var j = -1; j < 2; j++) {
+//             newCol = col + j;
+//             if (isInRange(newRow, newCol, SIZE)) {
+//                 changeColor(newRow, newCol, STYLE_UNSWEPT);
+//             }
+//         }
+//     }
+//     changeColor(row, col, STYLE_SWEPT);
+// }
+
+//uncomment this to find problems 
+function explore(row, col) {
+    if(grid[row][col].has_mine == 1){
+        // how to end the game????..........
+        //return;
+        //game_over = true; // write another function
+        //alert("Sorry, you lose the game");
+        showFinalBoard();
+        return;
+    }else{
+        changeColor(row, col, STYLE_SWEPT);
+        grid[row, col].visited == true;
+        explore_helper(row, col);
+    }
+
+    
+}
+
+
 //recursive helper functin
-function explore_helper(row, col) {
-    if(grid[row][col].neighbor_mines == 0){
+function explore_helper(row, col) { 
+    if(grid[row][col].neighbor_mines != 0){
+        grid[newRow, newCol].visited == true;
+        changeColor(row, col, STYLE_UNSWEPT);
+        return;
+    }else{
+        console.log("enter the helper");
+        console.log(grid[row][col].neighbor_mines);
         var newRow;
         var newCol;
 
@@ -153,15 +173,12 @@ function explore_helper(row, col) {
             newRow = row + i;
             for (var j = -1; j < 2; j++) {
                 newCol = col + j;
-                if (isInRange(newRow, newCol, SIZE)) {
-                    changeState(newRow, newCol);
+                if (isInRange(newRow, newCol, SIZE) && grid[newRow, newCol].visited == false) {
+                    grid[newRow, newCol].visited == true;
                     explore_helper(newRow, newCol);
                 }
             }
         }
-    }else{
-        changeState(newRow, newCol);
-        return;
     }
 }
 
@@ -214,6 +231,30 @@ function makeFlag(row, col) {
     myImg.src = "static/css/flag.png";
 }
 
+function gameOverChecker(row, col) {
+    //console.log("gameover checking row col --> " + row + col);
+
+    if(grid[row][col].has_mine == 1){
+        alert("Sorry, you lose the game");
+        showFinalBoard();
+        return;
+    }
+
+}
+
+function showFinalBoard(){
+    for(i=0; i < SIZE; i++){
+      for(j=0; j < SIZE; j++){
+        if(grid[i][j].has_mine){
+            changeColor(i, j, STYLE_MINE);
+        }
+      }
+    }
+
+    document.removeEventListener("mousedown", handleClick);
+    document.removeEventListener("contextmenu", handleMenu);
+}
+
 function changeColor(row, col, style) {
     context.fillStyle = style;
     context.fillRect((col + 1) * LENGTH, (row + 1) * LENGTH, LENGTH, LENGTH);
@@ -226,8 +267,9 @@ function handleClick(evt) {
         var curr = grid[row][col];
         if (evt.which == 1) {
             if ((!curr.isVisible) || curr.isSwept || curr.isFlag)
-                console.log("should not respond");
+                //console.log("should not respond");
             explore(row, col);
+            gameOverChecker(row, col);
         } else if (evt.which == 3) {
             makeFlag(row, col);
         }
@@ -263,6 +305,9 @@ function init() {
             }
         }
     }
+
+    // place mine
+    generate_game_grid();
 
     canvas = $('<canvas/>').attr({
         width: BLOCK_WIDTH + 2 * LENGTH,
