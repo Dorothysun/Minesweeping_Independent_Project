@@ -258,7 +258,8 @@ function init() {
                 swept: false,
                 flag: false,
                 has_mine: 0,
-                neighbor_mines: 0 
+                neighbor_mines: 0,
+                visited: false, 
             }
         }
     }
