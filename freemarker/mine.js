@@ -140,27 +140,6 @@ function explore_helper(row, col) {
     }
 }
 
-// try to end the page
-function draw_RevealBoard() {
-    document.getElementById("divThree").style.display = "none";
-    document.getElementById("divFour").style.display = "block";
-
-    for (var x = 0; x <= BLOCK_WIDTH; x += 30) {
-        context.moveTo(x + LENGTH, LENGTH);
-        context.lineTo(x + LENGTH, BLOCK_HEIGHT + LENGTH);
-    }
-
-    for (var y = 0; y <= BLOCK_HEIGHT; y += 30) {
-        context.moveTo(LENGTH, y + LENGTH);
-        context.lineTo(BLOCK_WIDTH + LENGTH, y + LENGTH);
-    }
-
-
-    context.strokeStyle = "black";
-    context.stroke();
-
-    draw_bomb(grid);
-}
 
 function bomb(row,col){
     //context.drawImage(bombImg,col*30,row*30);
