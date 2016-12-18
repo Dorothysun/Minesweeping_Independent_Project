@@ -19,7 +19,7 @@ const STYLE_INVISIBLE = "#000000";
 //PRE
 const STYLE_SWEPT = "#e0e0e0";
 const STYLE_UNSWEPT = "#9e9e9e";
-
+const STYLE_MINE = "#ff0000";
 
 var idUser;
 var idRoom;
@@ -35,26 +35,25 @@ var game_over;
 
 //plant bomb 
 function generate_game_grid(){
-    //var grid = new Array(SIZE);
-    for (i = 0; i < SIZE; ++i) grid(i) = new Array(SIZE);
+    // var grid = new Array(SIZE);
+    // for (i = 0; i < SIZE; ++i) grid(i) = new Array(SIZE);
     for(i=0; i < SIZE; i++){
       for(j=0; j < SIZE; j++){
         grid[i][j].visited = 0;
         // assign a random num to each slot
         var rand = Math.floor(Math.random() * 100 + 1);
 
+        console.log("enter rand generate_game_grid");
+
         if (rand < 100 - MINE_PC) {
           grid[i][j].has_mine = 0;
+          console.log("not a mine");
         } else {
           grid[i][j].has_mine = 1;
+          console.log("place a mine");
         }
       }
     }
-    // for(i=0; i < SIZE; i++){
-    //   for(j=0; j < SIZE; j++){
-    //     countAtIndex(grid);
-    //   }
-    // }
 }
 
 function countAtIndex(grid){
@@ -71,9 +70,6 @@ function countAtIndex(grid){
         }
      }
 }
-
-
-
 
 
 function drawBoard() {
@@ -136,10 +132,11 @@ function explore(row, col) {
 //         // how to end the game????..........
 //         //return;
 //         //game_over = true; // write another function
-//         draw_RevealBoard();
+//         alert("Sorry, you lose the game");
+//         // draw_RevealBoard();
 //     }
 
-//     explore_helper(row, col);
+//     // explore_helper(row, col);
 // }
 
 
@@ -214,6 +211,30 @@ function makeFlag(row, col) {
     myImg.src = "static/css/flag.png";
 }
 
+function gameOverChecker(row, col) {
+    console.log("gameover checking row col --> " + row + col);
+
+    if(grid[row][col].has_mine == 1){
+        alert("Sorry, you lose the game");
+        showFinalBoard();
+        return;
+    }
+
+}
+
+function showFinalBoard(){
+    for(i=0; i < SIZE; i++){
+      for(j=0; j < SIZE; j++){
+        if(grid[i][j].has_mine){
+            changeColor(i, j, STYLE_MINE);
+        }
+      }
+    }
+
+    document.removeEventListener("mousedown", handleClick);
+    document.removeEventListener("contextmenu", handleMenu);
+}
+
 function changeColor(row, col, style) {
     context.fillStyle = style;
     context.fillRect((col + 1) * LENGTH, (row + 1) * LENGTH, LENGTH, LENGTH);
@@ -228,6 +249,7 @@ function handleClick(evt) {
             if ((!curr.isVisible) || curr.isSwept || curr.isFlag)
                 console.log("should not respond");
             explore(row, col);
+            gameOverChecker(row, col);
         } else if (evt.which == 3) {
             makeFlag(row, col);
         }
@@ -262,6 +284,9 @@ function init() {
             }
         }
     }
+
+    // place mine
+    generate_game_grid();
 
     canvas = $('<canvas/>').attr({
         width: BLOCK_WIDTH + 2 * LENGTH,
