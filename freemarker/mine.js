@@ -117,8 +117,13 @@ function explore(row, col) {
 //recursive helper functin to recurse on the surrounding 8 neighbours 
 // I dont think the visited work properly 
 function explore_helper(row, col) { 
-    if(grid[row][col].neighbor_mines != 0){
-        grid[newRow, newCol].visited == true;
+	if(row < 0 || row > SIZE || col < 0 || col > SIZE){
+		return;
+	}
+
+
+    if((grid[row][col].neighbor_mines != 0)&& (grid[row][col].visited != undefined)){
+        grid[row][col].visited == true;
         changeColor(row, col, STYLE_UNSWEPT);
         return;
     }else{
@@ -248,7 +253,7 @@ function init() {
                 flag: false,
                 has_mine: 0,
                 neighbor_mines: 0,
-                visited: false, 
+                visited: false 
             }
         }
     }
